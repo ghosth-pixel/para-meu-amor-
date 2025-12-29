@@ -7,14 +7,13 @@
 <style>
     body {
         margin: 0;
-        padding: 0;
-        background: radial-gradient(circle, #ffe2ec, #ffccd9, #f3a3b8);
+        background: linear-gradient(135deg, #ffd6e9, #fff1f6);
         font-family: "Georgia", serif;
-        overflow: hidden;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
+        overflow: hidden;
     }
 
     /* Corações subindo */
@@ -22,117 +21,109 @@
         position: fixed;
         bottom: -20px;
         color: #ff4d88;
-        animation: subir linear infinite;
-        opacity: 0.85;
+        animation: subir 6s linear infinite;
+        opacity: 0.8;
         pointer-events: none;
     }
     @keyframes subir {
         0% { transform: translateY(0) scale(1); opacity: 1; }
-        100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        100% { transform: translateY(-110vh) scale(1.5); opacity: 0; }
     }
 
-    /* Envelope */
-    .envelope-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        cursor: pointer;
-        animation: balancar 3s ease-in-out infinite;
-    }
-    @keyframes balancar {
-        0%, 100% { transform: rotate(-2deg); }
-        50% { transform: rotate(2deg); }
-    }
-
-    .envelope {
-        width: 330px;
-        height: 210px;
-        background: linear-gradient(#f6d8df, #f1c3ce);
-        border-radius: 6px;
-        position: relative;
-        box-shadow: 0 12px 35px rgba(0,0,0,0.25);
-    }
-
-    .tampa {
-        width: 100%;
-        height: 100%;
-        background: #ebadb9;
-        clip-path: polygon(0 0, 100% 0, 50% 70%);
-        position: absolute;
-        top: 0;
-        left: 0;
-        transform-origin: top;
-        transition: 0.8s;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
-        color: #8c0038;
-        font-size: 22px;
-        letter-spacing: 1px;
-        text-shadow: 1px 1px #ffffff;
-    }
-
-    /* Folha estilo antiga */
-    .folha {
-        width: 70%;
-        max-width: 600px;
-        min-height: 360px;
-        background: #f9f3e9;
+    /* Botão para abrir a carta */
+    #abrir {
+        background: #b3005e;
+        color: white;
+        padding: 15px 30px;
         border-radius: 8px;
-        position: absolute;
-        top: 52%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0;
-        padding: 40px;
-        line-height: 1.6;
-        box-shadow: 0px 8px 40px rgba(0,0,0,0.35);
-        transition: 1s;
+        font-size: 22px;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.25);
+        transition: 0.3s;
+    }
+    #abrir:hover {
+        background: #8a004a;
+        transform: scale(1.05);
+    }
+
+    /* Carta */
+    .carta {
         display: none;
-
-        /* Estilo de carta antiga */
-        background-image: url('https://i.imgur.com/vG2f0nG.png');
-        background-size: cover;
-        background-repeat: no-repeat;
-        font-family: "Times New Roman", serif;
-        font-size: 19px;
-        color: #4a2e1d;
+        width: 80%;
+        max-width: 600px;
+        background: #fff9f0;
+        border-radius: 12px;
+        box-shadow: 0 14px 50px rgba(0,0,0,0.3);
+        padding: 40px;
+        animation: fadeIn 1s;
     }
 
-    .folha h1 {
-        color: #7b002c;
-        font-size: 38px;
-        margin-bottom: 25px;
-        text-align: center;
-        font-family: "Cormorant Garamond", serif;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
     }
-    .folha p {
+
+    .carta h1 {
         text-align: center;
+        color: #a0004c;
+        font-size: 36px;
+        margin-bottom: 20px;
+    }
+
+    .carta p {
+        font-size: 20px;
+        color: #4d2b24;
+        line-height: 1.6;
         white-space: pre-line;
+    }
+
+    /* Efeito máquina de escrever */
+    .texto-digitado {
+        border-right: 2px solid #a0004c;
+        animation: piscar 0.8s infinite;
+    }
+    @keyframes piscar {
+        0% { border-color: transparent; }
+        50% { border-color: #a0004c; }
+        100% { border-color: transparent; }
     }
 </style>
 </head>
 <body>
 
-<div class="envelope-container" id="abrirCarta">
-    <div class="envelope"></div>
-    <div class="tampa">Clique aqui</div>
+<button id="abrir">Clique aqui para abrir</button>
+
+<div class="carta" id="carta">
+    <h1>Eu te amo</h1>
+    <p id="texto" class="texto-digitado"></p>
 </div>
 
-<div class="folha" id="folha">
-    <h1>Eu te amo</h1>
-    <p>
+<script>
+/* Corações */
+function criarCoracao() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "❤";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 20) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+}
+setInterval(criarCoracao, 450);
+
+/* Texto para ser digitado */
+const textoCompleto = `
 Eu não tenho muita confiança nas pessoas,
 mas com você é diferente.
 
 Mesmo com medo de um dia
 usarem o que eu digo contra mim,
-ainda assim eu escolhi confiar em você.
+eu escolhi confiar em você.
 
-E isso é grande para mim,
-porque eu não abro meu coração
+E isso é grande para mim.
+Porque eu não abro meu coração
 para qualquer pessoa.
 
 Por favor, valorize isso.
@@ -143,46 +134,26 @@ mas que eu sinto de verdade.
 
 Sim, eu te amo.
 E isso é real.
-    </p>
-</div>
+`;
 
-<script>
-/* Corações subindo */
-function criarCoracao() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "❤";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (Math.random() * 16 + 24) + "px";
-    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 7000);
+/* Efeito máquina de escrever */
+function digitar(texto, elemento, velocidade = 40) {
+    let i = 0;
+    function escrever() {
+        if (i < texto.length) {
+            elemento.innerHTML += texto.charAt(i);
+            i++;
+            setTimeout(escrever, velocidade);
+        }
+    }
+    escrever();
 }
-setInterval(criarCoracao, 450);
 
-/* Abrir carta (funciona clicando em qualquer parte do envelope) */
-const carta = document.getElementById("abrirCarta");
-const tampa = document.querySelector(".tampa");
-const folha = document.getElementById("folha");
-
-carta.addEventListener("click", () => {
-    carta.style.animation = "none";
-    tampa.style.transform = "rotateX(-170deg)";
-
-    setTimeout(() => {
-        folha.style.display = "block";
-        folha.style.opacity = "1";
-        folha.style.transform = "translate(-50%, -50%) scale(1)";
-    }, 700);
-
-    setTimeout(() => {
-        carta.style.opacity = "0";
-        carta.style.transform = "scale(0.6)";
-    }, 1300);
-
-    setTimeout(() => {
-        carta.style.display = "none";
-    }, 1800);
+document.getElementById("abrir").addEventListener("click", () => {
+    document.getElementById("abrir").style.display = "none";
+    const carta = document.getElementById("carta");
+    carta.style.display = "block";
+    digitar(textoCompleto, document.getElementById("texto"), 40);
 });
 </script>
 
