@@ -3,86 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Para Vocês</title>
+<title>Para Você</title>
 <style>
     body {
         margin: 0;
         padding: 0;
-        background: linear-gradient(to bottom, #ffb3c6, #ffdde1);
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        text-align: center;
+        background: linear-gradient(to bottom, #ffd6e9, #fff1f6);
+        font-family: "Georgia", serif;
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
     }
 
-    .container {
-        background: rgba(255,255,255,0.3);
-        padding: 30px;
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 0 20px rgba(0,0,0,0.2);
-        max-width: 600px;
-    }
-
-    h1 {
-        font-size: 32px;
-        color: #b3005e;
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
-
-    p {
-        font-size: 18px;
-        color: #4a0033;
-        line-height: 1.6;
-    }
-
+    /* Corações subindo */
     .heart {
-        position: absolute;
-        bottom: -50px;
-        color: #ff0055;
-        font-size: 24px;
-        animation: subir linear infinite;
+        position: fixed;
+        bottom: -20px;
+        color: #ff4d88;
+        font-size: 20px;
+        animation: subir 6s linear infinite;
         opacity: 0.8;
     }
-
     @keyframes subir {
-        0% { transform: translateY(0) scale(1); opacity: 1; }
-        100% { transform: translateY(-110vh) scale(1.5); opacity: 0; }
+        0% {transform: translateY(0) scale(1); opacity: 1;}
+        100% {transform: translateY(-100vh) scale(1.6); opacity: 0;}
+    }
+
+    /* Carta fechada */
+    .carta {
+        width: 280px;
+        height: 200px;
+        background: #ffe5ef;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        animation: balancar 3s ease-in-out infinite;
+        position: relative;
+        transition: 0.8s;
+    }
+    @keyframes balancar {
+        0%, 100% { transform: rotate(-3deg); }
+        50% { transform: rotate(3deg); }
+    }
+
+    .carta .texto-fechado {
+        font-size: 20px;
+        font-weight: bold;
+        color: #b3005e;
+    }
+
+    /* Carta aberta */
+    .carta-aberta {
+        width: 90%;
+        max-width: 600px;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        opacity: 0;
+        transform: scale(0.7);
+        transition: 0.6s;
+        display: none;
+    }
+
+    .carta-aberta.aberta {
+        display: block;
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .carta-aberta h1 {
+        color: #b3005e;
+        font-size: 32px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .carta-aberta p {
+        color: #4a0033;
+        font-size: 19px;
+        line-height: 1.6;
+        text-align: center;
+        white-space: pre-line;
     }
 </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Eu Te Amo</h1>
+<!-- Carta Fechada -->
+<div class="carta" id="carta">
+    <div class="texto-fechado">Clique aqui</div>
+</div>
+
+<!-- Carta Aberta -->
+<div class="carta-aberta" id="cartaAberta">
+    <h1>Eu te amo</h1>
     <p>
-        olha nao tenho muita confiança nas pessoa mas com vcs eu estou tendo<br>
-        assim nao vou mentir tenho receio de vcs usar oq eu contro pra vc contra mim<br>
-        mas espero que isso nao aconolha eu cmç a me importar com vcs entao dem valor<br>
-        nisso pois nao sao todos que eu faço isso ok<br><br>
-        entao sim eu amo vcs<br>
-        eu te amo ok ?
+Eu não tenho muita confiança nas pessoas, mas com você é diferente.
+Para ser sincero, ainda tenho um pouco de medo de que um dia usem o que eu digo contra mim,
+mas, mesmo assim, eu escolhi confiar em você.
+
+E isso não é pouco. Isso é algo grande para mim.
+Porque não é com qualquer pessoa que eu abro meu coração assim.
+
+Por favor, valorize isso.
+Você se tornou alguém importante para mim,
+de um jeito que eu não esperava, mas que eu sinto de verdade.
+
+Sim, eu te amo.
+E isso é real.
     </p>
 </div>
 
 <script>
+/* Corações subindo */
 function criarCoracao() {
     const heart = document.createElement("div");
     heart.classList.add("heart");
     heart.innerHTML = "❤";
     heart.style.left = Math.random() * 100 + "vw";
-    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    heart.style.fontSize = (Math.random() * 20 + 20) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
     document.body.appendChild(heart);
-    setTimeout(() => {
-        heart.remove();
-    }, 6000);
+    setTimeout(() => heart.remove(), 7000);
 }
+setInterval(criarCoracao, 400);
 
-setInterval(criarCoracao, 300);
+/* Abrir Carta */
+const carta = document.getElementById("carta");
+const cartaAberta = document.getElementById("cartaAberta");
+
+carta.addEventListener("click", () => {
+    carta.style.opacity = "0";
+    carta.style.transform = "scale(0.6)";
+    setTimeout(() => {
+        carta.style.display = "none";
+        cartaAberta.classList.add("aberta");
+    }, 600);
+});
 </script>
 
 </body>
