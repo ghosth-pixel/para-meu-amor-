@@ -8,7 +8,7 @@
     body {
         margin: 0;
         padding: 0;
-        background: linear-gradient(135deg, #ffdde6, #fff6fa);
+        background: radial-gradient(circle, #ffe2ec, #ffccd9, #f3a3b8);
         font-family: "Georgia", serif;
         overflow: hidden;
         display: flex;
@@ -22,8 +22,7 @@
         position: fixed;
         bottom: -20px;
         color: #ff4d88;
-        font-size: 20px;
-        animation: subir 6s linear infinite;
+        animation: subir linear infinite;
         opacity: 0.85;
         pointer-events: none;
     }
@@ -33,28 +32,33 @@
     }
 
     /* Envelope */
-    .envelope {
-        width: 300px;
-        height: 200px;
-        background: #f9e3ea;
-        border-radius: 6px;
-        position: relative;
+    .envelope-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
         cursor: pointer;
-        box-shadow: 0 12px 35px rgba(0,0,0,0.2);
         animation: balancar 3s ease-in-out infinite;
     }
-
     @keyframes balancar {
         0%, 100% { transform: rotate(-2deg); }
         50% { transform: rotate(2deg); }
     }
 
-    /* Tampa do envelope */
+    .envelope {
+        width: 330px;
+        height: 210px;
+        background: linear-gradient(#f6d8df, #f1c3ce);
+        border-radius: 6px;
+        position: relative;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+    }
+
     .tampa {
         width: 100%;
         height: 100%;
-        background: #f7d1da;
-        clip-path: polygon(0 0, 100% 0, 50% 55%);
+        background: #ebadb9;
+        clip-path: polygon(0 0, 100% 0, 50% 70%);
         position: absolute;
         top: 0;
         left: 0;
@@ -64,46 +68,57 @@
         justify-content: center;
         align-items: center;
         font-weight: bold;
-        color: #b3005e;
-        font-size: 20px;
+        color: #8c0038;
+        font-size: 22px;
         letter-spacing: 1px;
+        text-shadow: 1px 1px #ffffff;
     }
 
-    /* Folha de carta */
+    /* Folha estilo antiga */
     .folha {
-        width: 260px;
-        min-height: 320px;
-        background: #ffffff;
-        border-radius: 6px;
+        width: 70%;
+        max-width: 600px;
+        min-height: 360px;
+        background: #f9f3e9;
+        border-radius: 8px;
         position: absolute;
-        top: 60%;
+        top: 52%;
         left: 50%;
         transform: translate(-50%, -50%) scale(0.8);
         opacity: 0;
-        text-align: center;
-        padding: 25px;
-        box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        padding: 40px;
+        line-height: 1.6;
+        box-shadow: 0px 8px 40px rgba(0,0,0,0.35);
         transition: 1s;
-        overflow: hidden;
+        display: none;
+
+        /* Estilo de carta antiga */
+        background-image: url('https://i.imgur.com/vG2f0nG.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        font-family: "Times New Roman", serif;
+        font-size: 19px;
+        color: #4a2e1d;
     }
 
     .folha h1 {
-        color: #b3005e;
-        margin-bottom: 20px;
-        font-size: 28px;
+        color: #7b002c;
+        font-size: 38px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-family: "Cormorant Garamond", serif;
     }
     .folha p {
-        color: #4a0033;
-        font-size: 18px;
-        line-height: 1.55;
+        text-align: center;
         white-space: pre-line;
     }
 </style>
 </head>
 <body>
 
-<div class="envelope" id="envelope">
-    <div class="tampa" id="tampa">Clique aqui</div>
+<div class="envelope-container" id="abrirCarta">
+    <div class="envelope"></div>
+    <div class="tampa">Clique aqui</div>
 </div>
 
 <div class="folha" id="folha">
@@ -112,13 +127,12 @@
 Eu não tenho muita confiança nas pessoas,
 mas com você é diferente.
 
-Eu ainda tenho medo de um dia
+Mesmo com medo de um dia
 usarem o que eu digo contra mim,
-mas, mesmo assim,
-eu escolhi confiar em você.
+ainda assim eu escolhi confiar em você.
 
-E isso é grande para mim.
-Porque não abro meu coração
+E isso é grande para mim,
+porque eu não abro meu coração
 para qualquer pessoa.
 
 Por favor, valorize isso.
@@ -139,35 +153,36 @@ function criarCoracao() {
     heart.classList.add("heart");
     heart.innerHTML = "❤";
     heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (Math.random() * 20 + 20) + "px";
+    heart.style.fontSize = (Math.random() * 16 + 24) + "px";
     heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 7000);
 }
-setInterval(criarCoracao, 400);
+setInterval(criarCoracao, 450);
 
-/* Animação de abrir envelope */
-const envelope = document.getElementById("envelope");
-const tampa = document.getElementById("tampa");
+/* Abrir carta (funciona clicando em qualquer parte do envelope) */
+const carta = document.getElementById("abrirCarta");
+const tampa = document.querySelector(".tampa");
 const folha = document.getElementById("folha");
 
-envelope.addEventListener("click", () => {
-    envelope.style.animation = "none";           // para de balançar
-    tampa.style.transform = "rotateX(-160deg)";  // tampa abre para trás
+carta.addEventListener("click", () => {
+    carta.style.animation = "none";
+    tampa.style.transform = "rotateX(-170deg)";
 
     setTimeout(() => {
+        folha.style.display = "block";
         folha.style.opacity = "1";
         folha.style.transform = "translate(-50%, -50%) scale(1)";
-    }, 900);
+    }, 700);
 
     setTimeout(() => {
-        envelope.style.opacity = "0";
-        envelope.style.transform = "scale(0.6)";
-    }, 1500);
+        carta.style.opacity = "0";
+        carta.style.transform = "scale(0.6)";
+    }, 1300);
 
     setTimeout(() => {
-        envelope.style.display = "none";
-    }, 2000);
+        carta.style.display = "none";
+    }, 1800);
 });
 </script>
 
