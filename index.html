@@ -2,82 +2,104 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carta</title>
+
 <style>
-body {
-  margin: 0;
-  background: linear-gradient(#ffb6c1, #ff69b4);
-  overflow: hidden;
+body{
+  margin:0;
+  background: linear-gradient(#ff9acb,#ff5fa2);
   font-family: Arial, sans-serif;
+  overflow:hidden;
 }
 
-.fundo span {
-  position: absolute;
-  bottom: -50px;
-  font-size: 24px;
-  animation: subir 8s linear infinite;
+/* Corações e rosas */
+.fundo span{
+  position:absolute;
+  bottom:-40px;
+  font-size:24px;
+  animation: subir 7s linear infinite;
+}
+@keyframes subir{
+  from{transform:translateY(0);opacity:1;}
+  to{transform:translateY(-120vh);opacity:0;}
 }
 
-@keyframes subir {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-120vh); opacity: 0; }
+/* Centro */
+.centro{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
 }
 
-.centro {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+/* Envelope */
+.carta{
+  width:280px;
+  height:180px;
+  background:#ff4f8b;
+  border-radius:10px;
+  position:relative;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  color:white;
+  box-shadow:0 10px 20px rgba(0,0,0,.3);
 }
 
-.carta {
-  width: 250px;
-  height: 160px;
-  background: #fff;
-  border-radius: 10px;
-  position: relative;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
+.carta::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:linear-gradient(135deg, transparent 50%, rgba(255,255,255,.3) 50%);
+  border-radius:10px;
 }
 
-.carta.aberta {
+.carta.aberta{
   animation: abrir 1s forwards;
 }
-
-@keyframes abrir {
-  to {
-    transform: scale(1.2);
-    opacity: 0;
-  }
+@keyframes abrir{
+  to{transform:scale(1.3);opacity:0;}
 }
 
-.conteudo {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(255,182,193,0.95);
-  padding: 20px;
-  box-sizing: border-box;
+/* Tela da carta aberta */
+.conteudo{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(255,105,180,.95);
+  padding:10px;
 }
 
-.papel {
-  background: #fff;
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-  border-radius: 10px;
-  height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+/* Papel interno */
+.papel{
+  background:#fff8dc;
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+  border-radius:10px;
+  height:85vh;
+  overflow-y: scroll;        /* força barra */
+  font-size:18px;           /* tamanho normal */
+  line-height:1.6;
+  box-shadow:0 0 20px rgba(0,0,0,.3);
 }
 
-#texto {
-  white-space: pre-line;
-  font-size: 16px;
+/* Barra visível */
+.papel::-webkit-scrollbar{
+  width:10px;
+}
+.papel::-webkit-scrollbar-thumb{
+  background:#ff5fa2;
+  border-radius:10px;
+}
+.papel::-webkit-scrollbar-track{
+  background:#ffd1e3;
 }
 </style>
 </head>
@@ -91,44 +113,51 @@ body {
 
 <div class="conteudo" id="conteudo">
   <div class="papel">
+    <p style="text-align:center;color:#999;">Role para baixo para ler tudo</p>
     <div id="texto"></div>
   </div>
 </div>
 
 <script>
+/* Corações e rosas */
 const fundo = document.getElementById("fundo");
 for(let i=0;i<30;i++){
-  const s = document.createElement("span");
+  const s=document.createElement("span");
   s.innerText = Math.random()>0.5 ? "❤️" : "🌹";
-  s.style.left = Math.random()*100+"vw";
-  s.style.animationDuration = (5+Math.random()*5)+"s";
+  s.style.left=Math.random()*100+"vw";
+  s.style.animationDuration=(5+Math.random()*5)+"s";
   fundo.appendChild(s);
 }
 
-const carta = document.getElementById("carta");
-const conteudo = document.getElementById("conteudo");
-const textoDiv = document.getElementById("texto");
-
+/* Texto da carta */
 const textoCarta = `
-Meu amor, meu passado não é tão legal e sei que você pode achar que estou mentindo ou brincando, mas a verdade é que eu não sinto amor ou empatia por quase ninguém, apenas por você agora. Minha família não é das melhores e meu relacionamento com eles é péssimo. Não vou mentir: eu era muito feliz aos 11, 12 anos, até que fui abusado. Ele fez 'aquilo' comigo e você sabe o que é... Por causa disso, me sinto inseguro, com medo e me sinto uma pessoa suja, tocada. Para completar, eu amava muito a minha mãe, ao ponto de não sair do lado dela. Um dia, ela conheceu um cara no Pará, se mudou para lá e levou só a minha irmã, me deixando com meu pai. Esperei muito tempo para ir morar com ela, até que um dia fui sozinho, enfrentando vários problemas — erraram minha passagem e fiquei preso em uma parada em Goiânia. Resumindo, cheguei ao destino final, na casa da minha mãe e do meu ex-padrasto. Passei dois meses lá e foi um inferno. Uma vez, minha mãe teve um surto porque eles brigaram; eu e minha irmã a levamos ao hospital com a ajuda de uma vizinha. Ela voltou no dia seguinte e, dopada, disse que eu e minha irmã acabamos com o relacionamento dela, que éramos 'capetas' e tudo mais. Depois desse dia, não consigo olhar para ela e dizer 'eu te amo'. Na verdade, não consigo dizer isso para ninguém da minha família pelo que me fizeram. Sobre minhas inseguranças em relacionamentos: eu namorei uma garota e, no começo, era tudo perfeito. Eu fazia de tudo por ela, cheguei a me individar para comprar presentes, e no final a encontrei beijando outro cara atrás de uma árvore. Eu vi a cena. No meu segundo relacionamento, tentei ser diferente, dei amor e carinho, ficávamos em call sempre... ela me pedia fotos íntimas e, mesmo me sentindo inseguro, eu mandava. No final, ela me trocou. Descobri a senha do Insta dela e vi que ela já tinha outra pessoa. Mesmo fazendo de tudo, fui descartado. Isso dói muito e me traz um medo constante de que você também me troque."
+COLE SEU TEXTO AQUI.
+Ele vai aparecer sendo escrito sozinho.
+Pode ser grande, a carta tem rolagem.
 `;
 
-carta.onclick = () => {
+/* Abrir carta */
+const carta=document.getElementById("carta");
+const conteudo=document.getElementById("conteudo");
+const textoDiv=document.getElementById("texto");
+
+carta.onclick=()=>{
   carta.classList.add("aberta");
-  setTimeout(() => {
-    conteudo.style.display = "block";
-    escreverTexto(textoCarta);
-  }, 1000);
+  setTimeout(()=>{
+    conteudo.style.display="block";
+    escrever(textoCarta);
+  },1000);
 };
 
-function escreverTexto(texto){
-  textoDiv.innerHTML = "";
-  let i = 0;
-  const intervalo = setInterval(()=>{
-    textoDiv.innerHTML += texto[i];
+/* Animação digitando */
+function escrever(txt){
+  textoDiv.innerHTML="";
+  let i=0;
+  const t=setInterval(()=>{
+    textoDiv.innerHTML+=txt[i];
     i++;
-    if(i >= texto.length) clearInterval(intervalo);
-  }, 40);
+    if(i>=txt.length) clearInterval(t);
+  },35);
 }
 </script>
 
