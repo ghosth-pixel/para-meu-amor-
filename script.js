@@ -46,12 +46,16 @@ for (let i = 0; i < 5; i++) {
 // PORTA
 const door = new THREE.Mesh(
   new THREE.BoxGeometry(4, 4, .5),
-  new THREE.MeshStandardMaterial({ color:0x7a3cff })
+  new THREE.MeshStandardMaterial({ 
+    color: 0x111111,
+    emissive: 0x7a3cff,
+    emissiveIntensity: 0.5
+  })
 );
 door.position.set(0, 2, -25);
 scene.add(door);
 
-// NPC FINAL
+// NPC
 const npc = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
   new THREE.MeshStandardMaterial({ color:0x4488ff })
@@ -59,18 +63,34 @@ const npc = new THREE.Mesh(
 npc.position.set(0, .5, -35);
 scene.add(npc);
 
+// PAREDES
+function criarParede(x, z, largura, altura, profundidade) {
+  const parede = new THREE.Mesh(
+    new THREE.BoxGeometry(largura, altura, profundidade),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+  parede.position.set(x, altura/2, z);
+  scene.add(parede);
+}
+
+criarParede(0, -30, 40, 6, 1);
+criarParede(0, 20, 40, 6, 1);
+criarParede(-20, -5, 1, 6, 50);
+criarParede(20, -5, 1, 6, 50);
+
 // CONTROLES
 let keys = {};
 let doorUnlocked = false;
 let doorOpen = false;
 let finalShown = false;
 
+const interact = document.getElementById("interact");
+
 document.addEventListener("keydown", e => {
   keys[e.key.toLowerCase()] = true;
 
   if (e.key.toLowerCase() === "e") {
 
-    // PORTA
     if (player.position.distanceTo(door.position) < 5 && doorUnlocked && !doorOpen) {
       const code = prompt("Digite o código:");
       if (code === "1506") {
@@ -82,7 +102,6 @@ document.addEventListener("keydown", e => {
       }
     }
 
-    // FINAL
     if (player.position.distanceTo(npc.position) < 3 && doorOpen) {
       showFinal();
     }
@@ -96,7 +115,6 @@ document.addEventListener("click", () => {
   if (zombies.length > 0) {
     const z = zombies.pop();
     scene.remove(z);
-
     document.getElementById("zombies").textContent = zombies.length;
 
     if (zombies.length === 0) {
@@ -106,7 +124,7 @@ document.addEventListener("click", () => {
   }
 });
 
-// FINAL BONITO
+// FINAL
 function showFinal() {
   if (finalShown) return;
   finalShown = true;
@@ -115,11 +133,14 @@ function showFinal() {
   document.getElementById("final").style.display = "block";
 
   let frase = `
-  Mesmo depois de tudo que você passou...<br><br>
-  você nunca desistiu.<br><br>
-  E mesmo assim... você veio até mim.<br><br>
-  E é por isso que eu te amo ❤️
-  `;
+Mesmo depois de tudo que você passou...<br><br>
+eu sei que não foi fácil.<br><br>
+Mas mesmo assim... você continuou.<br><br>
+E mesmo no meio do caos...<br>
+você veio até mim.<br><br>
+E eu quero que você saiba...<br><br>
+eu te amo de verdade. ❤️
+`;
 
   let i = 0;
   function escrever() {
@@ -137,11 +158,22 @@ function animate() {
   requestAnimationFrame(animate);
 
   const speed = 0.15;
+  const rotationSpeed = 0.05;
 
-  if (keys["w"]) player.position.z -= speed;
-  if (keys["s"]) player.position.z += speed;
-  if (keys["a"]) player.position.x -= speed;
-  if (keys["d"]) player.position.x += speed;
+  // GIRAR
+  if (keys["a"]) player.rotation.y += rotationSpeed;
+  if (keys["d"]) player.rotation.y -= rotationSpeed;
+
+  // ANDAR
+  if (keys["w"]) {
+    player.position.x -= Math.sin(player.rotation.y) * speed;
+    player.position.z -= Math.cos(player.rotation.y) * speed;
+  }
+
+  if (keys["s"]) {
+    player.position.x += Math.sin(player.rotation.y) * speed;
+    player.position.z += Math.cos(player.rotation.y) * speed;
+  }
 
   // ZUMBIS SEGUINDO
   zombies.forEach(z => {
@@ -150,8 +182,20 @@ function animate() {
     z.position.z += (player.position.z - z.position.z) * 0.005;
   });
 
+  // INTERAÇÃO
+  if (player.position.distanceTo(door.position) < 5 && doorUnlocked && !doorOpen) {
+    interact.style.display = "block";
+  } else if (player.position.distanceTo(npc.position) < 3 && doorOpen) {
+    interact.style.display = "block";
+  } else {
+    interact.style.display = "none";
+  }
+
   // CAMERA
-  camera.position.set(player.position.x, player.position.y + 5, player.position.z + 10);
+  camera.position.x = player.position.x + Math.sin(player.rotation.y) * 8;
+  camera.position.z = player.position.z + Math.cos(player.rotation.y) * 8;
+  camera.position.y = player.position.y + 5;
+
   camera.lookAt(player.position);
 
   renderer.render(scene, camera);
