@@ -5,7 +5,6 @@ body {
   font-family: Arial;
 }
 
-/* HUD */
 #hud {
   position: fixed;
   top: 15px;
@@ -17,7 +16,16 @@ body {
   border-radius: 12px;
 }
 
-/* FINAL */
+#interact {
+  position: fixed;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  color: white;
+  display: none;
+  font-size: 20px;
+}
+
 #final {
   display: none;
   position: fixed;
