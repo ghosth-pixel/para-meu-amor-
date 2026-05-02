@@ -2,161 +2,182 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carta</title>
-
+<title>Até Você ❤️</title>
 <style>
-body{
-  margin:0;
-  background: linear-gradient(#ff9acb,#ff5fa2);
-  font-family: Arial, sans-serif;
-  overflow:hidden;
-}
-
-/* Corações e rosas */
-.fundo span{
-  position:absolute;
-  bottom:-40px;
-  font-size:24px;
-  animation: subir 7s linear infinite;
-}
-@keyframes subir{
-  from{transform:translateY(0);opacity:1;}
-  to{transform:translateY(-120vh);opacity:0;}
-}
-
-/* Centro */
-.centro{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-}
-
-/* Envelope */
-.carta{
-  width:280px;
-  height:180px;
-  background:#ff4f8b;
-  border-radius:10px;
-  position:relative;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  color:white;
-  box-shadow:0 10px 20px rgba(0,0,0,.3);
-}
-
-.carta::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:linear-gradient(135deg, transparent 50%, rgba(255,255,255,.3) 50%);
-  border-radius:10px;
-}
-
-.carta.aberta{
-  animation: abrir 1s forwards;
-}
-@keyframes abrir{
-  to{transform:scale(1.3);opacity:0;}
-}
-
-/* Tela da carta aberta */
-.conteudo{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(255,105,180,.95);
-  padding:10px;
-}
-
-/* Papel interno */
-.papel{
-  background:#fff8dc;
-  max-width:600px;
-  margin:auto;
-  padding:20px;
-  border-radius:10px;
-  height:85vh;
-  overflow-y: scroll;        /* força barra */
-  font-size:18px;           /* tamanho normal */
-  line-height:1.6;
-  box-shadow:0 0 20px rgba(0,0,0,.3);
-}
-
-/* Barra visível */
-.papel::-webkit-scrollbar{
-  width:10px;
-}
-.papel::-webkit-scrollbar-thumb{
-  background:#ff5fa2;
-  border-radius:10px;
-}
-.papel::-webkit-scrollbar-track{
-  background:#ffd1e3;
-}
+  body { margin:0; overflow:hidden; background:#000; font-family:Arial; }
+  #hud {
+    position:fixed; top:15px; left:15px; color:white; z-index:10;
+    background:rgba(0,0,0,.5); padding:12px; border-radius:12px;
+  }
+  #final {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.95);
+    color:white; z-index:99; text-align:center; padding-top:18%;
+    font-size:30px; line-height:1.6;
+  }
 </style>
 </head>
 <body>
 
-<div class="fundo" id="fundo"></div>
-
-<div class="centro">
-  <div class="carta" id="carta">Clique para abrir</div>
+<div id="hud">
+  🧟 Zumbis restantes: <span id="zombies">5</span><br>
+  🎮 WASD para andar | Clique para atirar<br>
+  🚪 Código da porta: <b>1506</b>
 </div>
 
-<div class="conteudo" id="conteudo">
-  <div class="papel">
-    <p style="text-align:center;color:#999;">Role para baixo para ler tudo</p>
-    <div id="texto"></div>
+<div id="final">
+  <div>
+    Mesmo depois de tudo que você passou...<br><br>
+    você veio até mim.<br><br>
+    Viu como, independente de tudo,<br>
+    você ainda conseguiu me salvar?<br><br>
+    E é por isso que eu te amo. ❤️
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
 <script>
-/* Corações e rosas */
-const fundo = document.getElementById("fundo");
-for(let i=0;i<30;i++){
-  const s=document.createElement("span");
-  s.innerText = Math.random()>0.5 ? "❤️" : "🌹";
-  s.style.left=Math.random()*100+"vw";
-  s.style.animationDuration=(5+Math.random()*5)+"s";
-  fundo.appendChild(s);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050505);
+
+const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const light = new THREE.PointLight(0xffffff, 2);
+light.position.set(0, 10, 8);
+scene.add(light);
+
+const ambient = new THREE.AmbientLight(0x555555);
+scene.add(ambient);
+
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(80, 80),
+  new THREE.MeshStandardMaterial({ color:0x151515 })
+);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+
+const player = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 2, 1),
+  new THREE.MeshStandardMaterial({ color:0xff4fd8 })
+);
+player.position.set(0, 1, 8);
+scene.add(player);
+
+const gun = new THREE.Mesh(
+  new THREE.BoxGeometry(.25, .25, 1.2),
+  new THREE.MeshStandardMaterial({ color:0x222222 })
+);
+gun.position.set(.7, 1.3, 7.5);
+scene.add(gun);
+
+let zombies = [];
+
+for (let i = 0; i < 5; i++) {
+  const zombie = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 2, 1),
+    new THREE.MeshStandardMaterial({ color:0x28ff4f })
+  );
+  zombie.position.set(-10 + i * 5, 1, -5 - Math.random() * 6);
+  scene.add(zombie);
+  zombies.push(zombie);
 }
 
-/* Texto da carta */
-const textoCarta = `
-Meu amor, meu passado não é tão legal e sei que você pode achar que estou mentindo ou brincando, mas a verdade é que eu não sinto amor ou empatia por quase ninguém, apenas por você agora. Minha família não é das melhores e meu relacionamento com eles é péssimo. Não vou mentir: eu era muito feliz aos 11, 12 anos, até que fui abusado. Ele fez 'aquilo' comigo e você sabe o que é... Por causa disso, me sinto inseguro, com medo e me sinto uma pessoa suja, tocada. Para completar, eu amava muito a minha mãe, ao ponto de não sair do lado dela. Um dia, ela conheceu um cara no Pará, se mudou para lá e levou só a minha irmã, me deixando com meu pai. Esperei muito tempo para ir morar com ela, até que um dia fui sozinho, enfrentando vários problemas — erraram minha passagem e fiquei preso em uma parada em Goiânia. Resumindo, cheguei ao destino final, na casa da minha mãe e do meu ex-padrasto. Passei dois meses lá e foi um inferno. Uma vez, minha mãe teve um surto porque eles brigaram; eu e minha irmã a levamos ao hospital com a ajuda de uma vizinha. Ela voltou no dia seguinte e, dopada, disse que eu e minha irmã acabamos com o relacionamento dela, que éramos 'capetas' e tudo mais. Depois desse dia, não consigo olhar para ela e dizer 'eu te amo'. Na verdade, não consigo dizer isso para ninguém da minha família pelo que me fizeram. Sobre minhas inseguranças em relacionamentos: eu namorei uma garota e, no começo, era tudo perfeito. Eu fazia de tudo por ela, cheguei a me individar para comprar presentes, e no final a encontrei beijando outro cara atrás de uma árvore. Eu vi a cena. No meu segundo relacionamento, tentei ser diferente, dei amor e carinho, ficávamos em call sempre... ela me pedia fotos íntimas e, mesmo me sentindo inseguro, eu mandava. No final, ela me trocou. Descobri a senha do Insta dela e vi que ela já tinha outra pessoa. Mesmo fazendo de tudo, fui descartado. Isso dói muito e me traz um medo constante de que você também me troque."
-`;
+const door = new THREE.Mesh(
+  new THREE.BoxGeometry(4, 4, .5),
+  new THREE.MeshStandardMaterial({ color:0x7a3cff })
+);
+door.position.set(0, 2, -18);
+scene.add(door);
 
-/* Abrir carta */
-const carta=document.getElementById("carta");
-const conteudo=document.getElementById("conteudo");
-const textoDiv=document.getElementById("texto");
+const npc = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshStandardMaterial({ color:0x4488ff })
+);
+npc.position.set(0, .5, -27);
+scene.add(npc);
 
-carta.onclick=()=>{
-  carta.classList.add("aberta");
-  setTimeout(()=>{
-    conteudo.style.display="block";
-    escrever(textoCarta);
-  },1000);
-};
+let keys = {};
+let doorUnlocked = false;
+let doorOpen = false;
+let finalShown = false;
 
-/* Animação digitando */
-function escrever(txt){
-  textoDiv.innerHTML="";
-  let i=0;
-  const t=setInterval(()=>{
-    textoDiv.innerHTML+=txt[i];
-    i++;
-    if(i>=txt.length) clearInterval(t);
-  },35);
+document.addEventListener("keydown", e => {
+  keys[e.key.toLowerCase()] = true;
+
+  if (e.key.toLowerCase() === "e") {
+    if (player.position.distanceTo(door.position) < 5 && doorUnlocked && !doorOpen) {
+      const code = prompt("Digite o código da porta:");
+      if (code === "1506") {
+        doorOpen = true;
+        scene.remove(door);
+        alert("A porta abriu...");
+      } else {
+        alert("Código errado.");
+      }
+    }
+
+    if (player.position.distanceTo(npc.position) < 3 && doorOpen) {
+      showFinal();
+    }
+  }
+});
+
+document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+
+document.addEventListener("click", () => {
+  if (zombies.length > 0) {
+    const z = zombies.pop();
+    scene.remove(z);
+    document.getElementById("zombies").textContent = zombies.length;
+
+    if (zombies.length === 0) {
+      doorUnlocked = true;
+      alert("Você derrotou todos os zumbis. Vá até a porta e aperte E.");
+    }
+  }
+});
+
+function showFinal() {
+  if (finalShown) return;
+  finalShown = true;
+  document.getElementById("final").style.display = "block";
 }
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  const speed = 0.12;
+
+  if (keys["w"]) player.position.z -= speed;
+  if (keys["s"]) player.position.z += speed;
+  if (keys["a"]) player.position.x -= speed;
+  if (keys["d"]) player.position.x += speed;
+
+  gun.position.x = player.position.x + .7;
+  gun.position.y = player.position.y + .3;
+  gun.position.z = player.position.z - .5;
+
+  zombies.forEach(z => {
+    z.lookAt(player.position);
+    z.position.z += 0.01;
+  });
+
+  camera.position.set(player.position.x, player.position.y + 5, player.position.z + 9);
+  camera.lookAt(player.position);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 </script>
 
 </body>
